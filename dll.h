@@ -42,7 +42,7 @@ DLLIMPORT int dwarf_get_addr(char *variable, unsigned int *addr, char *file);
  */
 DLLIMPORT int dwarf_get_array_count (char *str, int *count, char *file);
 /* get a member offset
- i/p struct type name 
+ i/p struct type name
  eg: dwarf_get_member_offset_from_typename("task_struct.mm.mmap_cache.vm_flags", buffer, "vmlinux");;
  */
 DLLIMPORT int dwarf_get_member_offset_from_typename(char *str_name, int *buffer, char *file);

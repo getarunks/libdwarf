@@ -30,7 +30,7 @@ void print_dwarftag(long tag)
 {
  	 if(debug_g)printf("===================\n");
 	 if(debug_g)printf("[ 0x%x ]", info_off - (unsigned int)section_debug_info - 1/*index*/);
-	switch(tag){	
+	switch(tag){
 	case DW_TAG_compile_unit:
 		if(debug_g)printf("TAG: compile unit\n");
 		break;
@@ -43,7 +43,7 @@ void print_dwarftag(long tag)
 	case DW_TAG_member:
 		if(debug_g)printf("TAG: member\n");
 		break;
-	case DW_TAG_base_type:	
+	case DW_TAG_base_type:
 		if(debug_g)printf("TAG: base_type\n");
 		break;
 	case DW_TAG_subprogram:
@@ -138,16 +138,16 @@ void print_abbrev_attr( long attr)
 				break;
 			case DW_AT_decl_line:
 				if(debug_g)printf("decl line:\t");
-				break;			
+				break;
 			case DW_AT_sibling:
-				if(debug_g)printf("sibling:\t\t");				
-				break;		
+				if(debug_g)printf("sibling:\t\t");
+				break;
 			case DW_AT_type:
 				if(debug_g)printf("type:\t\t");
-				break;			
+				break;
 			case DW_AT_data_member_location:
 				if(debug_g)printf("data_member_location:\t");
-				break;				
+				break;
 			case DW_AT_encoding:
 				if(debug_g)printf("encoding:\t");
 				break;
@@ -229,7 +229,7 @@ int decode_OP(form, attr)
 
 	op = *(unsigned char *)info_off;
 	info_off +=1;
-	
+
 	if(debug_g)printf("op = 0x%x\n", op);
 	switch(op){
 	case DW_OP_plus_uconst:
@@ -247,9 +247,9 @@ int decode_OP(form, attr)
 		//printf("[ 0x%x ]", info_off - (unsigned int)section_debug_info);
 		//printf("used = %d\n", used);
 		break;
-		
-	/* DW_OP_breg0, DW_OP_breg1, ..., DW_OP_breg31 
-	The single operand of the DW_OP_bregn operations provides a 
+
+	/* DW_OP_breg0, DW_OP_breg1, ..., DW_OP_breg31
+	The single operand of the DW_OP_bregn operations provides a
 	signed LEB128 offset from the specified register.*/
 	case DW_OP_breg0:
 	case DW_OP_breg1:
@@ -282,7 +282,7 @@ int decode_OP(form, attr)
 	case DW_OP_breg28:
 	case DW_OP_breg29:
 	case DW_OP_breg30:
-	case DW_OP_breg31:	
+	case DW_OP_breg31:
 		loc = decode_leb128(info_off , &used);
 		info_off += used;
 		break;
@@ -343,7 +343,7 @@ int print_abbrev_form(long form, long attr, char * info_off, void **ptr)
 				if(debug_g)printf("%d\n",  *(unsigned char *)info_off);
 				used = 1;
 //				if(attr == DW_AT_byte_size)
-				*ptr = *(unsigned char *)info_off;				
+				*ptr = *(unsigned char *)info_off;
 				break;
 			case DW_FORM_data2:
 				if(debug_g)printf("%d\n", *(unsigned short *)info_off);
@@ -378,7 +378,7 @@ int print_abbrev_form(long form, long attr, char * info_off, void **ptr)
 				if(debug_g)printf("ref4 0x%x\n", *(unsigned int *)info_off);
 				used = 4;
 				break;
-			case DW_FORM_block1:			
+			case DW_FORM_block1:
 				if(DW_AT_const_value == attr){
 					//len = decode_ULEB128(info_off , &used);
 					len = *(unsigned char *)info_off;
@@ -407,7 +407,7 @@ int print_abbrev_form(long form, long attr, char * info_off, void **ptr)
 				used +=1;
 				info_off +=1;
 				break;
-			case DW_FORM_sdata:				
+			case DW_FORM_sdata:
 				ret = decode_ULEB128(info_off , &used);
 				if(debug_g)printf("%d\n", ret);
 				info_off +=used;
@@ -415,8 +415,8 @@ int print_abbrev_form(long form, long attr, char * info_off, void **ptr)
 			default:
 				printf("not supported form = 0x%x\n", form);
 				exit(0);
-		}		
-		
+		}
+
 		return used;
 }
 

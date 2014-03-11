@@ -35,7 +35,7 @@ Elf32_Shdr		section_header_array[50];
 int section_header_index(enum section_type type, char *name){
 	int i;
 	char section_name[50];
-	
+
 	for(i = 0 ; i < elf_header.e_shnum; i++){
 		if((section_header_array[i].sh_type == type) &&
 			strcmp(name, section_header_array[i].sh_name + section_shStrTable)== 0)
@@ -44,12 +44,12 @@ int section_header_index(enum section_type type, char *name){
 }
 
 int verify_elf_header(Elf32_Ehdr *elf_header){
-	
+
 	int ret = 0;
-	
-    if((elf_header->e_ident[EI_index_MAG0] == ELFMAG0 )&& 
-							   ( elf_header->e_ident[EI_index_MAG1] == ELFMAG1 )&& 
-                              ( elf_header->e_ident[EI_index_MAG2] == ELFMAG2) && 
+
+    if((elf_header->e_ident[EI_index_MAG0] == ELFMAG0 )&&
+							   ( elf_header->e_ident[EI_index_MAG1] == ELFMAG1 )&&
+                              ( elf_header->e_ident[EI_index_MAG2] == ELFMAG2) &&
                               ( elf_header->e_ident[EI_index_MAG3] == ELFMAG3))
               ret = 1;
     else {
@@ -73,10 +73,10 @@ int verify_elf_header(Elf32_Ehdr *elf_header){
 }
 
 FILE *fp;
-  
+
 int find_and_copy_section_shstrtable(Elf32_Shdr *shHeaderArray, char *name){
 	 int i, ret;
-	 
+
 	 for ( i = 0 ; i < 40 ; i ++)
 	 	if(shHeaderArray[i].sh_type == SHT_STRTAB){
 			if(debug_g)printf("i = %d\n", i);
@@ -85,12 +85,12 @@ int find_and_copy_section_shstrtable(Elf32_Shdr *shHeaderArray, char *name){
 				printf("libdwarf: malloc failed Line :%d\n", __LINE__ );
 				exit(0);
 			}
-	 
+
 		if( fseek(fp, shHeaderArray[i].sh_offset, 0)!= 0){
 			printf("libdwarf: fseek failed Line no %d\n", __LINE__ );
 			exit(1);
 		}
-	 
+
 		ret = fread(section_shStrTable, 1, shHeaderArray[i].sh_size, fp);
 		if(ret < 0){
 			printf("libdwarf: fread error Line %d\n", __LINE__);
@@ -104,24 +104,24 @@ int find_and_copy_section_shstrtable(Elf32_Shdr *shHeaderArray, char *name){
 			free(section_shStrTable);
 			exit(0);
 		}
-	} 
+	}
 	 return 1;
 }
 
 int copy_section(Elf32_Shdr *shHeaderArray, char *name, int num_sections, enum section_type type, char **dest, int *size){
 
 	int i;
-	
+
 	for(i=0 ; i < num_sections ; i++)
-		if(shHeaderArray[i].sh_type == type)		
+		if(shHeaderArray[i].sh_type == type)
 			if(strcmp(name, section_shStrTable + shHeaderArray[i].sh_name) == 0)
 				break;
-				
+
 	if(i == num_sections){
 		printf("DWARF LIB error: cannot find section LINE %d\n", __LINE__);
 		exit(0);
 	}
-	
+
 	*dest = malloc(shHeaderArray[i].sh_size);
 	if(*dest == NULL){
 		printf("DWARF LIB error: malloc failed Line %d\n", __LINE__);
@@ -135,10 +135,10 @@ int copy_section(Elf32_Shdr *shHeaderArray, char *name, int num_sections, enum s
 		printf("libdwarf: fread failed Line %d\n", __LINE__);
 		exit(0);
 	}
-		
+
 	if(size !=NULL)
-		*size = shHeaderArray[i].sh_size;	
-		
+		*size = shHeaderArray[i].sh_size;
+
 	return 0;
 }
 
@@ -159,11 +159,11 @@ int find_symbol(char *str){
 
 	int index = section_header_index(SHT_SYMTAB, ".symtab");
 	last_symbol = section_symTable +section_header_array[index].sh_size;
- 
+
 	for (symbol = section_symTable; symbol < last_symbol ; symbol++){
 		if(strcmp(str, symbol->st_name + section_strTable) == 0 )
 			break;
-	} 
+	}
 	if(symbol >= last_symbol){
 		printf("cannot find symbol\n");
 		return -1;
@@ -175,7 +175,7 @@ int find_symbol(char *str){
 #if 0//arun deleteme
 int find_nth_symbol(int index, char *sym_name, unsigned int *sym_val){
 	Elf32_Sym *symbol, *last_symbol;
-	
+
     int symtab_index = section_header_index(SHT_SYMTAB, ".symtab");
     last_symbol = section_symTable + section_header_array[symtab_index].sh_size;
 
@@ -188,25 +188,25 @@ int find_nth_symbol(int index, char *sym_name, unsigned int *sym_val){
     strcpy(sym_name, symbol->st_name + section_strTable);
     *sym_val = symbol->st_value;
     return 0;
-} 
+}
 #endif
 
 FILE * open_n_copy_sections(char *file_path)
 {
  	int ret;
-	
+
     if(file_path == NULL){
         printf("filename is NULL Line No: %d", __LINE__);
 		return 0;
 	}
-                             
+
     if(debug_g)printf("%s\n", file_path );
     fp = fopen(file_path, "rb");
     if(!fp){
         printf("fopen failed \n");
-        return 0;                                
+        return 0;
     }
-               
+
     ret = fread(&elf_header, 1, sizeof(elf_header), fp);
 	if(ret < 0){
 		printf("libdwarf: fread error LINE %d\n",__LINE__);
@@ -214,14 +214,14 @@ FILE * open_n_copy_sections(char *file_path)
 	}
     if(debug_g)printf("size of elfheader %d\n", sizeof(elf_header));
     if(debug_g)printf("%x %c%c%c\n", elf_header.e_ident[0], elf_header.e_ident[1],elf_header.e_ident[2],elf_header.e_ident[3]);
-    
+
     if(verify_elf_header(&elf_header)){
-		if(debug_g)printf("ELF image header correct\n");    
+		if(debug_g)printf("ELF image header correct\n");
 	}else {
 	    printf("Wrong header in elf\n");
  		return -1;
 	}
-    
+
 	/* print the section headers */
 	ret =  fseek(fp, elf_header.e_shoff, 0);
 	if(ret != 0){
@@ -247,7 +247,7 @@ FILE * open_n_copy_sections(char *file_path)
 	copy_section(section_header_array, ".strtab", elf_header.e_shnum, SHT_STRTAB, &section_strTable, NULL);
 	//find_symbol("__log_buf");
 	//find_symbol("init_task");
-	
+
 	read_n_copy_dwarf_sections();
 	return fp;
 }
@@ -266,7 +266,7 @@ void test_fun(void);
  * where init_task is a variable */
 DLLIMPORT UINT dwarf_get_member_offset (char *str, int *buffer, char *file)
 {
-    int c, ret, i,j; 
+    int c, ret, i,j;
   	char string_table_section_buff[50];
 	int die_off, struct_type_die_offset, member_location, what_type, ptr_type;
 	char delims[] = ".";
@@ -285,10 +285,10 @@ DLLIMPORT UINT dwarf_get_member_offset (char *str, int *buffer, char *file)
         printf("fopen failed \n");
         return -1;
     }
-	
+
 	variable_name = strtok(string_ptr, delims);
 	if(debug_g)printf("variable_name = %s\n", variable_name);
-	
+
 	member_name = strtok(NULL, delims);
 	if(debug_g) printf("member_name = %s\n", member_name);
 	die_off = get_global_variable_die_offset(variable_name);
@@ -300,32 +300,32 @@ DLLIMPORT UINT dwarf_get_member_offset (char *str, int *buffer, char *file)
 	}
 	struct_type_die_offset = find_struct_type_die_offset(die_off, &what_type);
 	i = 0;
-	
+
 	do {
 		if(debug_g)printf("struct type offset = %d 0x%x what_type = %x\n", struct_type_die_offset, struct_type_die_offset, what_type);
 		if(debug_g)printf("what_type = %x member_name = %s\n", what_type, member_name);
-	
+
 		ptr_type = reach_struct_defintion(struct_type_die_offset);
 		if(debug_g)printf("called reach_struct_defintion i/p = 0x%x o/p = 0x%x\n", what_type, ptr_type);
 		if(debug_g)printf("ret = 0x%x\n", ptr_type);
 		if(ptr_type > 0)
-			struct_type_die_offset = ptr_type;		
+			struct_type_die_offset = ptr_type;
 
 		member_location = find_data_member_location(struct_type_die_offset, member_name, &what_type);
-		if(debug_g)printf("member name = %s member offset = %d 0x%x what_type = %x\n",member_name, member_location, member_location, what_type);	
+		if(debug_g)printf("member name = %s member offset = %d 0x%x what_type = %x\n",member_name, member_location, member_location, what_type);
 		buffer[i] = member_location;
 		if(member_location < 0)
 			return -1;
 		i++;
 		struct_type_die_offset = what_type;
 		member_name = strtok(NULL, delims);
-		
+
 	}while(member_name != NULL);
 
 	if(debug_g)
 		for (j = 0; j < i ; j++)
 			printf("%d = %d\n", j, buffer[j]);
-		
+
     fclose(fp);
 	free(string_ptr);
 	free_dynamic_memory();
@@ -337,7 +337,7 @@ int reach_struct_defintion(int what_type){
 	int type;
 
 	while(1){
-		
+
 		type = is_die_a_array_type(what_type);
 		if(type)
 			goto next;
@@ -368,9 +368,9 @@ DLLIMPORT INT dwarf_get_array_count (char *str, int *count, char *file)
 	char *this_str;
 	struct name_list *head, *temp, *parse;
 	int type, element_size, member_size, no_of_elements = 0, die_off, ret;
-	char array_name[50];	
+	char array_name[50];
 	char *string_ptr = malloc(strlen(str) + 1);
-		
+
 	if(string_ptr == NULL){
 		printf("malloc failed LINE %d\n", __LINE__);
 		exit(0);
@@ -383,7 +383,7 @@ DLLIMPORT INT dwarf_get_array_count (char *str, int *count, char *file)
 	fp = open_n_copy_sections(file);
 	if(!fp){
         	printf("fopen failed \n");
-	        return -1;                                
+	        return -1;
     	}
 
 	this_str = strtok(string_ptr, delims);
@@ -413,7 +413,7 @@ DLLIMPORT INT dwarf_get_array_count (char *str, int *count, char *file)
                 }
 
         }while(this_str != NULL);
-		
+
 		/* if no of elements  is one then it is a variable
 		 * so we have to search in pubnames section
 		 */
@@ -436,10 +436,10 @@ DLLIMPORT INT dwarf_get_array_count (char *str, int *count, char *file)
 			ret = find_upper_bound(die_off);
 			if(ret < 0)
 				return ret;//error
-			else {	
+			else {
 				*count = (ret + 1);//no of elements
 				goto out;
-			}			
+			}
 		}
 
         for(parse = head; parse != NULL ; parse = parse->next){
@@ -463,7 +463,7 @@ DLLIMPORT INT dwarf_get_array_count (char *str, int *count, char *file)
 
 		ptr_type = reach_struct_defintion(struct_type_die_off);
 		if(debug_g)printf("ptr_type = 0x%x\n", ptr_type);
-		
+
 		if(ptr_type > 0)
 			struct_type_die_off = ptr_type;
 
@@ -472,18 +472,18 @@ DLLIMPORT INT dwarf_get_array_count (char *str, int *count, char *file)
 		if(debug_g)printf("member_die_off = %x what_type = 0x%x\n", member_die_off, what_type);
 		parse->die_offset = member_die_off;
 		struct_type_die_off = what_type;
-		
+
 	}
 	/* now member_die_off will be pointing to count in "struct_task.mm.rss_stat.count" */
 	if(debug_g)printf("member_die_off = %x what_type = %x\n", member_die_off, what_type);
-	
+
 	what_type = reach_struct_defintion(struct_type_die_off);
 	if(what_type > 0 )
 			struct_type_die_off = what_type;
 	if(debug_g)	printf("struct_type_die_off = 0x%x\n", what_type);
 	element_size = get_structure_size(what_type);
 	if(debug_g)printf("element_size = %d\n", element_size);
-	
+
 	/* parse till rss_stat now */
 	for(parse = head; parse->next->next != NULL; parse = parse->next){
 		if(debug_g)printf("name = %s offset =0x%x\n", parse->name, parse->die_offset);
@@ -515,8 +515,8 @@ out:
 	return 0;
 
 }
-/* get a member offset 
- i/p struct type name 
+/* get a member offset
+ i/p struct type name
  eg: get_member_offset_from_typename("task_struct.mm.mmap_cache.vm_flags", buffer, "vmlinux");
  where buffer can be an array or integer pointer.
  */
@@ -534,9 +534,9 @@ DLLIMPORT INT dwarf_get_member_offset_from_typename(char *str_name, int *buffer,
 	}
 	strncpy(string_ptr, str_name, strlen(str_name));
 	string_ptr[strlen(str_name)] = '\0';
-	
+
 	if(debug_g)printf("str_name = %s\n", str_name);
-	
+
 	fp = open_n_copy_sections(file);
 	if(!fp){
         printf("fopen failed \n");
@@ -545,7 +545,7 @@ DLLIMPORT INT dwarf_get_member_offset_from_typename(char *str_name, int *buffer,
 
 	variable_name = strtok(string_ptr, delims);
 	if(debug_g)printf("variable_name = %s\n", variable_name);
-	
+
 	member_name = strtok(NULL, delims);
 	if(debug_g) printf("member_name = %s\n", member_name);
 
@@ -555,33 +555,33 @@ DLLIMPORT INT dwarf_get_member_offset_from_typename(char *str_name, int *buffer,
 		return -1;
 	}
 	if(debug_g)printf(" LINE %d DIEOFFSET = %x\n", __LINE__, struct_type_die_offset);
-	
+
 	i = 0;
 	do {
 		if(debug_g)printf("struct type offset = %d 0x%x what_type = %x\n", struct_type_die_offset, struct_type_die_offset, what_type);
 		if(debug_g)printf("what_type = %x member_name = %s\n", what_type, member_name);
-	
+
 		ptr_type = reach_struct_defintion(struct_type_die_offset);
 		if(debug_g)	printf("ptr_type = 0x%x\n", ptr_type);
 
 		if(ptr_type > 0)
 			struct_type_die_offset = ptr_type;
-			
+
 		member_location = find_data_member_location(struct_type_die_offset, member_name, &what_type);
-		if(debug_g)	printf("member offset = %d 0x%x what_type = %x\n", member_location, member_location, what_type);	
+		if(debug_g)	printf("member offset = %d 0x%x what_type = %x\n", member_location, member_location, what_type);
 		buffer[i] = member_location;
 		if(member_location < 0)
 			return -1;
 		i++;
 		struct_type_die_offset = what_type;
 		member_name = strtok(NULL, delims);
-		
+
 	}while(member_name != NULL);
-	
+
 	if(debug_g)
 		for (j = 0; j < i ; j++)
 			printf("%d = %d\n", j, buffer[j]);
-			
+
     fclose(fp);
 	free(string_ptr);
 	free_dynamic_memory();
@@ -595,7 +595,7 @@ DLLIMPORT INT dwarf_get_member_offset_from_typename(char *str_name, int *buffer,
 DLLIMPORT INT dwarf_get_addr(char *variable, unsigned int *addr, char *file)
 {
 	int ret = 0;
-	
+
 	fp = open_n_copy_sections(file);
 	*addr = find_symbol(variable);
 	if(*addr < 0){
@@ -615,12 +615,12 @@ DLLIMPORT INT dwarf_get_symbols_count(char *file)
 {
 	int count = 0;
 	fp = open_n_copy_sections(file);
-	
+
 	Elf32_Sym *symbol, *last_symbol;
-	
+
     int symtab_index = section_header_index(SHT_SYMTAB, ".symtab");
     last_symbol = section_symTable + section_header_array[symtab_index].sh_size;
-	
+
 	for(symbol = section_symTable ; symbol < last_symbol ; symbol++){
 
 		if(strncmp(symbol->st_name + section_strTable, "$a", 2) == 0)
@@ -628,7 +628,7 @@ DLLIMPORT INT dwarf_get_symbols_count(char *file)
 		if(strncmp(symbol->st_name + section_strTable, "$d", 2) == 0)
 			continue;
 		if(strncmp(symbol->st_name + section_strTable, "$t", 2) == 0)
-			continue;		
+			continue;
 		if(strncmp(symbol->st_name + section_strTable, "__crc_", 6) == 0)
 			continue;
 		if(symbol->st_name  == 0)
@@ -641,20 +641,20 @@ DLLIMPORT INT dwarf_get_symbols_count(char *file)
 
 DLLIMPORT int dwarf_get_elf_symbols(struct elf_symbol *elf_symbol)
 {
-	int ret = 0;	
+	int ret = 0;
 	Elf32_Sym *symbol, *last_symbol;
-	
+
     int symtab_index = section_header_index(SHT_SYMTAB, ".symtab");
     last_symbol = section_symTable + section_header_array[symtab_index].sh_size;
-	
+
 	for(symbol = section_symTable ; symbol < last_symbol ; symbol++){
-	
+
 		if(strncmp(symbol->st_name + section_strTable, "$a", 2) == 0)
 			continue;
 		if(strncmp(symbol->st_name + section_strTable, "$d", 2) == 0)
 			continue;
 		if(strncmp(symbol->st_name + section_strTable, "$t", 2) == 0)
-			continue;		
+			continue;
 		if(strncmp(symbol->st_name + section_strTable, "__crc_", 6) == 0)
 			continue;
 		if(symbol->st_name  == 0)
@@ -664,7 +664,7 @@ DLLIMPORT int dwarf_get_elf_symbols(struct elf_symbol *elf_symbol)
 
 		elf_symbol->addr = symbol->st_value;
 		elf_symbol++;
-	}	
+	}
 	free_dynamic_memory();
 	fclose(fp);
 	return symbol_count;
@@ -675,11 +675,11 @@ return size of structure*/
 DLLIMPORT INT dwarf_get_sizeof_type(char *str_name, char *file)
 {
 	int off,  what_type, size;
-	
+
 	fp = open_n_copy_sections(file);
     if(!fp){
         printf("fopen failed \n");
-        return -1;                                
+        return -1;
     }
 
 	off = find_die_offset_from_name(str_name);
@@ -688,7 +688,7 @@ DLLIMPORT INT dwarf_get_sizeof_type(char *str_name, char *file)
 		return -1;
 	}
 	if(debug_g)printf("LINE %d DIEOFFSET = %x\n",__LINE__, off);
-	
+
 	size = get_structure_size(off);
 	fclose(fp);
 	free_dynamic_memory();

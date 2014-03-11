@@ -29,7 +29,7 @@ dwarf_get_array_count_fn dwarf_get_array_count;
 typedef INT (CALLBACK* dwarf_get_member_offset_from_typename_fn)(char *str_name, int *buffer, char *file);
 dwarf_get_member_offset_from_typename_fn dwarf_get_member_offset_from_typename;
 HINSTANCE Hdll; /* handle to dll */
- 
+
 typedef void (CALLBACK* dwarf_debug_enable_fn)(int enable);
 dwarf_debug_enable_fn dwarf_debug_enable;
 
@@ -67,31 +67,31 @@ int main(int argc, char *argv[])
 		printf("Function dwarf_get_sizeof_type doesnt exist\n");
 		exit(0);
 	}
-	
+
 	dwarf_get_member_offset = (dwarf_get_member_offset_fn)GetProcAddress(Hdll , "dwarf_get_member_offset");
 	if(!dwarf_get_member_offset){
 		printf("Function dwarf_get_member_offset doesnt exist\n");
 		exit(0);
 	}
-	
+
 	dwarf_debug_enable = (dwarf_debug_enable_fn) GetProcAddress(Hdll, "dwarf_debug_enable");
 		if(!dwarf_debug_enable){
 		printf("Function dwarf_debug_enable doesnt exist\n");
 		exit(0);
 	}
-	
+
 	dwarf_get_symbols_count = (dwarf_get_symbols_count_fn) GetProcAddress(Hdll, "dwarf_get_symbols_count");
 		if(!dwarf_get_symbols_count){
 		printf("Function dwarf_get_symbols_count_fn doesnt exist\n");
 		exit(0);
 	}
-	
+
 	dwarf_get_elf_symbols = (dwarf_get_elf_symbols_fn) GetProcAddress(Hdll, "dwarf_get_elf_symbols");
 		if(!dwarf_get_elf_symbols){
 		printf("Function dwarf_get_elf_symbols doesnt exist\n");
 		exit(0);
-	}	
-	
+	}
+
 	dwarf_get_member_offset_from_typename = (dwarf_get_member_offset_from_typename_fn)GetProcAddress(Hdll , "dwarf_get_member_offset_from_typename");
 	if(!dwarf_get_member_offset_from_typename){
 		printf("No such func name dwarf_get_member_offset_from_typename\n");
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 	if(!dwarf_get_array_count){
 		printf("No such func name dwarf_get_array_coun\n");
 		exit(0);
-	}	
+	}
 	dwarf_get_addr = (dwarf_get_addr_fn)GetProcAddress(Hdll , "dwarf_get_addr");
 	if(!dwarf_get_addr){
 		printf("No such func name dwarf_get_array_coun\n");
@@ -131,56 +131,56 @@ int main(int argc, char *argv[])
 			exit(0);
 		}
 	printf("reach back\n");
-	
+
 	//printf("%s %x %s %x\n", elf_symbol[0]->name, elf_symbol[0]->addr, elf_symbol[100]->name, elf_symbol[100]->addr);
 		printf("%s %x %s %x\n", elf_symbol[0].name, elf_symbol[0].addr, elf_symbol[100].name, elf_symbol[100].addr);
 	}
 		return 0;
-	
+
 	offset = dwarf_get_member_offset("init_task.mm.mmap_cache.vm_flags", buffer, "vmlinux");
 	for(i = 0 ; i < 3 ; i++){
 		printf("APP dwarf_get_member_offset(init_task.mm.mmap_cache.vm_flags) %d %d\n", i, buffer[i]);
 		buffer[i] = 0;
 	}
-	
+
 	if (dwarf_get_member_offset("init_task.comm", buffer, "vmlinux")) {
 		fprintf(stderr,"Error:%d\n",__LINE__);
 		return -1;
-    }	
+    }
 
 	printf("APP dwarf_get_member_offset(init_task.comm) value = %d\n", buffer[0]);
-	
+
 	ret = dwarf_get_sizeof_type("task_struct", "vmlinux");
 	printf("APP = %d\n", ret);
-	
+
 	if (dwarf_get_member_offset_from_typename("pglist_data.nr_zones", buffer, "vmlinux")) {
 		fprintf(stderr,"Error:%d\n",__LINE__);
 		return -1;
 	}
 	printf("APP dwarf_get_member_offset_from_typename(pglist_data.nr_zones)	value %d \n", buffer[0]);
-	
+
 	if(dwarf_get_member_offset("contig_page_data.nr_zones", buffer, "vmlinux")) {
 		fprintf(stderr,"Error:%d\n",__LINE__);
 		return -1;
 	}
 	printf("APP dwarf_get_member_offset(contig_page_data.nr_zones)	value %d \n", buffer[0]);
-	
-	if (dwarf_get_member_offset("contig_page_data.node_zones.name", buffer, "vmlinux")) {	
+
+	if (dwarf_get_member_offset("contig_page_data.node_zones.name", buffer, "vmlinux")) {
 		fprintf(stderr,"Error:%d\n",__LINE__);
 		return -1;
-    }	
+    }
 	printf("APP dwarf_get_member_offset(contig_page_data.node_zones.name) %d %d\n", buffer[0], buffer[1]);
-		
-	if (dwarf_get_member_offset_from_typename("pglist_data.node_zones.name", buffer, "vmlinux")) {	
+
+	if (dwarf_get_member_offset_from_typename("pglist_data.node_zones.name", buffer, "vmlinux")) {
 		fprintf(stderr,"Error:%d\n",__LINE__);
 		return -1;
-    }	
+    }
 	printf("APP dwarf_get_member_offset_from_typename(pglist_data.node_zones.name) %d %d\n", buffer[0], buffer[1]);
-	
+
 	if (dwarf_get_member_offset_from_typename("task_struct.mm", buffer, "vmlinux")) {
 		fprintf(stderr,"Error:%d\n",__LINE__);
 		return -1;
-    }	
+    }
 	printf("APP dwarf_get_member_offset_from_typename(task_struct.mm) %d\n", buffer[0]);
 
 
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 	printf("APP dwarf_get_array_count(pglist_data.node_zones.lowmem_reserve) %d\n", buffer[0]);
-	
+
 	if(dwarf_get_array_count("pglist_data.node_zones.lowmem_reserve", buffer, "vmlinux")){
 		fprintf(stderr,"Error:%d\n",__LINE__);
 		return -1;
@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
 	}
 	printf("return succesfully\n");
 	printf("APP dwarf_get_array_count(zone.free_area.free_list) %d\n", buffer[0]);
-#endif	
+#endif
 	#if 1
 	if(dwarf_get_array_count("vm_stat", buffer, "vmlinux")){
 		fprintf(stderr,"Error:%d\n",__LINE__);
@@ -228,31 +228,31 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 	printf("APP %d\n", buffer[0]);
-	
+
 	if(dwarf_get_array_count("task_struct.mm.rss_stat.count", buffer, "vmlinux")){
 		fprintf(stderr,"Error:%d\n",__LINE__);
 		return -1;
 	}
-	printf("APP0 %d\n", buffer[0]);	
+	printf("APP0 %d\n", buffer[0]);
 	//dwarf_debug_enable(1);
 	if(dwarf_get_addr("swapper_pg_dir",  buffer, "vmlinux")){
 		fprintf(stderr,"Error:%d\n",__LINE__);
 		return -1;
 	}
 	printf("APP 0x%x\n", buffer[0]);
-	
+
 	if(dwarf_get_member_offset_from_typename("irq_desc.action.name", buffer, "vmlinux")){
 		fprintf(stderr,"Error:%d\n",__LINE__);
 		return -1;
 	}
 	printf("APP %d %d\n", buffer[0], buffer[1]);
-	
+
 	if(dwarf_get_member_offset_from_typename("kmem_list3.slabs_full", buffer, "vmlinux")){
 		fprintf(stderr,"Error:%d\n",__LINE__);
 		return -1;
 	}
 	printf("APP %d\n", buffer[0]);
-	
+
 	//if(dwarf_get_member_offset_from_typename("slab.inuse", buffer, "vmlinux")){
 	if(dwarf_get_member_offset_from_typename("zone.name", buffer, "vmlinux")){
 		fprintf(stderr,"Error:%d\n",__LINE__);
@@ -260,5 +260,5 @@ int main(int argc, char *argv[])
 	}
 	printf("APP zone.name %d 0x%x\n", buffer[0], buffer[0]);
 	return 0;
-	
+
 }
